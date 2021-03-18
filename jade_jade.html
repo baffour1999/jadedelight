@@ -1,0 +1,238 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Jade Delight</title>
+<style type="text/css">
+	body{
+		margin-left: 30%;
+		margin-right: 20%;
+		background-color:#8FBC8F ;
+		color:#DC143C;
+	}
+	h1{
+		text-align: center;
+		font-weight: bold;
+    	color:darkred;
+    	font-weight: bold;
+    	border-width: 3px;
+    	background-color:#808000 ;
+    	height: 10%;
+	}
+	th{
+		color:darkred;
+	}
+	.radio{
+
+		color:darkred;
+	}
+
+	.hov:hover{
+		background-color: #ADFF2F;
+	}
+	
+</style>
+</head>
+
+<body>
+<script language="javascript">
+
+function MenuItem(name, cost)
+{
+	this.name = name;
+	this.cost=cost;
+}
+
+menuItems = new Array(
+	new MenuItem("Chicken Chop Suey", 4.5),
+	new MenuItem("Sweet and Sour Pork", 6.25),
+	new MenuItem("Shrimp Lo Mein", 5.25),
+	new MenuItem("Moo Shi Chicken", 6.5),
+	new MenuItem("Fried Rice", 2.35)
+);
+
+function makeSelect(name, minRange, maxRange)
+{
+	var t= "";
+	t = "<select name='" + name + "' size='1'>";
+	for (j=minRange; j<=maxRange; j++)
+	   t += "<option>" + j + "</option>";
+	t+= "</select>"; 
+	return t;
+}
+</script>
+
+<h1>Jade Delight</h1>
+<form id="frm1" method ="get">
+
+<p>First Name: <input type="text"  name='fname' class="hov"/></p>
+<p>Last Name*:  <input type="text"  name='lname' class="hov" required/></p>
+ <div id="ifYes" style="display:none">
+<p>Street: <input type="text"  name='street' class="hov" /></p>
+<p>City: <input type="text"  name='city' class="hov" /></p>
+</div>
+<p>Phone*: <input type="text"  name='phone' maxlength="10" minlength="10" class="hov" required/></p>
+
+<p> 
+	<input type="radio"  name="p_or_d" onclick="Check();" value = "pickup" id="pickCheck" checked="checked"/>Pickup  
+	<input type="radio"  name='p_or_d' onclick="Check();" value = 'delivery' id="deliveryCheck"/>
+	Delivery
+</p>
+<table border="0" cellpadding="3">
+  <tr>
+    <th>Select Item</th>
+    <th>Item Name</th>
+    <th>Cost Each</th>
+    <th>Total Cost</th>
+  </tr>
+<script language="javascript">
+
+
+
+  var s = "";
+  for (i=0; i< menuItems.length; i++)
+  {
+	  s += "<tr><td>";
+	  s += makeSelect("quan" + i, 0, 10);
+	  s += "</td><td>" + menuItems[i].name + "</td>";
+	  s += "<td> $ " + menuItems[i].cost.toFixed(2) + "</td>";
+	  s += "<td>$<input type='text' name='cost'/></td></tr>";
+  }
+  document.writeln(s);
+
+
+     function Check() {
+         if (document.getElementById('deliveryCheck').checked) {
+           document.getElementById('ifYes').style.display = 'block';
+          }
+         else document.getElementById('ifYes').style.display = 'none';
+
+       }
+</script>
+</table>
+<p>Subtotal: 
+   $<input type="text"  name='subtotal' id="subtotal" />
+</p>
+<p>Mass tax 6.25%:
+  $ <input type="text"  name='tax' id="tax" />
+</p>
+<p>Total: $ <input type="text"  name='total' id="total" />
+</p>
+
+<input type ="button" id="but" value ="Submit Order" />
+
+</form>
+<script>
+
+	
+	
+	let selectArr = []
+	let subTotal = 0.00
+	let totalCost = 0.00
+	let OrderString =""
+
+
+	selectArr = document.getElementsByTagName('select')
+	for (let i=0; i < selectArr.length; i++){
+		  selectArr[i].onchange = function(){
+		  	let x = menuItems[i].cost
+		  	//let str = "quan" + i
+		  	// let y = document.getElementsByName(str)
+		  	let ans = selectArr[i].selectedIndex
+		  	if (ans > 0){
+		  		OrderString += "\n" + ans.toString() + " " + menuItems[i].name 
+		  		
+		  
+		  	}
+		  	
+		    let res = ans * x
+		    let res1 = res.toFixed(2)
+		    subTotal = Number(subTotal) + Number(res1)
+		    let Tax = 0.0625 * subTotal
+		    totalCost = subTotal + Tax 
+            
+            
+		    document.getElementsByName("cost")[i].value = res1
+		    document.getElementsByName("subtotal")[0].value = subTotal.toFixed(2)
+		    document.getElementsByName("tax")[0].value = Tax.toFixed(2)
+
+		    document.getElementsByName("total")[0].value = totalCost.toFixed(2)
+
+
+		  }
+		 
+	}
+   
+  
+     
+    document.getElementById("but").onclick = function() {
+    	  
+    	   let First = document.getElementsByName('fname')[0].value
+
+    	   var Last;
+    	   var Phone;
+    	   let CostArr = []
+    	   let count = 0
+    	   CostArr = document.getElementsByName('cost')
+    	   for (let i=0; i <CostArr.length;i++){
+    	   	   if (CostArr[i].value.length > 0 ){
+    	   	   	  count +=1
+    	   	   }
+    	   	   	
+    	   }
+    	   if (count < 1){
+    	   	 alert("You have to make an order!")
+
+    	   }
+    	   else{
+
+    	   	  if (document.getElementById('pickCheck').checked) {
+    	   	    if (document.getElementsByName('lname')[0].value.length == 0 ){
+    	   	    	alert("Enter Last Name!")
+    	   	    }
+    	   	    else{
+    	   	    	Last = document.getElementsByName('lname')[0].value
+    	   	    	if (document.getElementsByName('phone')[0].value.length < 10 || document.getElementsByName('phone')[0].value.length > 10 || 
+    	   	    		isNan(document.getElementsByName('phone')[0].value)){
+    	   	    	alert("Enter Valid Phone Number(10 digits)!")
+    	   	       }
+    	   	        else {
+    	   	    	Phone = document.getElementsByName('phone')[0].value
+    	   	    	alert("Thank You " + First + " " + Last + " for your order. \nYour order will be ready for pickup in 15 minutes\nOrder: " + OrderString + "\nYour total cost is: $" + totalCost.toFixed(2))
+    	   	    	}
+    	   	        
+    	   	        }
+    	   	    }
+
+      	 
+    	   	 
+    	   	 else {
+    	   	 	if (document.getElementsByName('lname')[0].value.length == 0 ){
+    	   	    	alert("Enter Last Name!")
+    	   	    }
+    	   	    else{
+    	   	    	Last = document.getElementsByName('lname')[0].value
+    	   	    	if (document.getElementsByName('phone')[0].value.length < 10 || document.getElementsByName('phone')[0].value.length > 10){
+    	   	    	alert("Enter Valid Phone Number(10 digits)!")
+    	   	       }
+
+    	   	        else {
+    	   	        if (isNan(document.getElementsByName('phone'))[0].value) {
+    	   	        	alert("Enter Valid Phone Number(10 digits)!")
+    	   	        }
+    	   	        else{
+    	   	        	Phone = document.getElementsByName('phone')[0].value
+    	   	    	alert("Thank You " + First + " " + Last + " for your order. \nYour order will be delivered in 30 minutes\nOrder: " + OrderString + "\nYour total cost is: $" + totalCost.toFixed(2))
+    	   	        }
+    	   	    	
+    	   	    	}
+    	   	        
+    	   	        }
+    	   	    }
+    	   	 }
+	   
+  }
+    	   
+</script>
+</body>
+</html>
